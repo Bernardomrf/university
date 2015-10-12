@@ -28,11 +28,17 @@ var triangleVertexColorBuffer = null;
 
 // The translation vector
 
-var tx = 0.0;
+var tx = 0.5;
 
 var ty = 0.0;
 
 var tz = 0.0;
+
+var tx1 = -0.5;
+
+var ty1 = 0.0;
+
+var tz1 = 0.0;
 
 // The rotation angles in degrees
 
@@ -367,6 +373,47 @@ function drawScene() {
 	// First transformation ?
 
 	// Last transformation ?
+
+	var mvMatrix = mult( rotationZZMatrix( angleZZ ),
+
+						 scalingMatrix( sx, sy, sz ) );
+
+	mvMatrix = mult( rotationYYMatrix( angleYY ), mvMatrix );
+
+	mvMatrix = mult( rotationXXMatrix( angleXX ), mvMatrix );
+
+	mvMatrix = mult( translationMatrix( tx1, ty1, tz1 ), mvMatrix );
+
+	// Passing the Model View Matrix to apply the current transformation
+
+	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+
+	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(flatten(mvMatrix)));
+
+	// Drawing the contents of the vertex buffer
+
+	// primitiveType allows drawing as filled triangles / wireframe / vertices
+
+	if( primitiveType == gl.LINE_LOOP ) {
+
+		// To simulate wireframe drawing!
+
+		// No faces are defined! There are no hidden lines!
+
+		// Taking the vertices 3 by 3 and drawing a LINE_LOOP
+
+		var i;
+
+		for( i = 0; i < triangleVertexPositionBuffer.numItems / 3; i++ ) {
+
+			gl.drawArrays( primitiveType, 3 * i, 3 );
+		}
+	}
+	else {
+
+		gl.drawArrays(primitiveType, 0, triangleVertexPositionBuffer.numItems);
+
+	}
 
 	var mvMatrix = mult( rotationZZMatrix( angleZZ ),
 
